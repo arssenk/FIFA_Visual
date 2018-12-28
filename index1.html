@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.jsdelivr.net/npm/vega@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@3"></script>
+    <title>Plane Crashes</title>
+</head>
+<body>
+<div>
+    <div id="viz"></div>
+</div>
+</body>
+<script>
+    var chart = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+        "title": "Statistic of selected countries at FIFA 2018",
+        "data": {
+            "url": "preprocessed_data.csv"
+        },
+        "vconcat": [
+            {
+                "encoding": {
+                    "color": {
+                        "condition": {
+                            "field": "Team",
+                            "selection": "brush",
+                            "type": "nominal"
+                        },
+                        "value": "lightgray"
+                    },
+                    "size": {
+                        "field": "Ball Possession %",
+                        "scale": {"domain": [0, 100], "range": [10, 1500]},
+                        "type": "quantitative"
+                    },
+                    "x": {
+                        "axis": {"title": "Date", "format": "%b"
+                        },
+                        "field": "Date",
+                        "timeUnit": "monthdate",
+                        "type": "temporal"
+                    },
+                    "y": {
+                        "axis": {"title": "Goal scored", "format": "s"},
+                        "field": "Scored",
+                        "scale": {"domain": [-0.5, 3.5]},
+                        "type": "quantitative"
+                    }
+                },
+                "width": 600,
+                "height": 300,
+                "mark": {"type":"point"}    ,
+                "selection": {"brush": {"encodings": ["x"], "type": "interval"}},
+                "transform": [{"filter": {"selection": "click"}}]
+            },
+            {
+                "encoding": {
+                    "color": {
+                        "condition": {
+                            "field": "Team",
+                            "title": "Team",
+                            "selection": "click",
+                            "type": "nominal"
+                        },
+                        "value": "lightgray"
+                    },
+                    "x": {"aggregate": "sum", "field": "Scored", "type": "quantitative"},
+                    "y": {"field": "Team", "type": "nominal"}
+                },
+                "width": 600,
+                "mark": "bar",
+                "selection": {"click": {"encodings": ["color"], "type": "multi"}},
+                "transform": [{"filter": {"selection": "brush"}}]
+            }
+        ]
+    };
+
+    var opts = {
+        "actions": false
+    };
+
+    vegaEmbed('#viz', chart, opts)
+</script>
+</html>
